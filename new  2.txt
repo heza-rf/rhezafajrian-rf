@@ -1,0 +1,143 @@
+<script>
+function sum() {
+
+  var harga_beli = document.getElementById('harga_beli').value;
+  var harga_jual = document.getElementById('harga_jual').value;
+  var result =parseInt(harga_jual) - parseInt(harga_beli);
+  if (!isNaN(result)) {
+    document.getElementById('profit').value = result;
+  }
+
+}
+</script>
+
+<?php 
+
+    if ($_SESSION['admin']) {
+      $user = $_SESSION['admin'];
+    }elseif ($_SESSION['penjual']){
+      $user = $_SESSION['penjual'];
+    }
+
+    $sql = $koneksi->query("select tb_user.id_user, tb_user.nama, tb_barang.id from tb_user, tb_barang where tb_user.id_user=tb_barang.id");
+
+
+    $data = $sql->fetch_assoc();
+
+ ?>
+
+<div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+          <!-- general form elements -->
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Tambah Barang</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            
+        <div class="body">
+          <form method="POST">
+            <div class="box-body">
+
+              <label for="">ID User</label>
+                <div class="form-group">
+                <input type="text" name="id_user" value="<?php echo $data['id_user']; ?>" readonly="" class="form-control" />
+                </div>
+
+                <label for="">Nama </label>
+                <div class="form-group">
+                <input type="text" name="nama" value="<?php echo $data['nama']; ?>" readonly="" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                  <label for="">Kode Barcode</label>
+                  <input type="text" class="form-control" name="kode_barcode"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="">Nama Barang</label>
+                  <input type="text" class="form-control" name="nama_barang"/>
+                </div>
+
+                <div class="form-group">
+                  <label>Satuan</label>
+                    <select name="satuan"class="form-control show-tick">
+                        <option value="">-- Pilih Satuan --</option>
+                        <option value="Pack">Pack</option>
+                        <option value="Lusin">Lusin</option>
+                        <option value="PCS">PCS</option>
+                                        
+                    </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="">Stok</label>
+                  <input type="number" class="form-control" name="stok"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="">Harga Beli</label>
+                  <input type="number" class="form-control" name="harga_beli" id="harga_beli" onkeyup="sum()"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="">Harga Jual</label>
+                  <input type="number" class="form-control" name="harga_jual" id="harga_jual" onkeyup="sum()"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="">Profit</label>
+                  <input type="number" class="form-control" name="profit" id="profit" readonly="" style="background-color: #e7e3e9;" value="0"/>
+                </div>
+
+                  <input type="submit" name="simpan" value="Simpan" class="btn btn-primary">
+
+              </div>
+            </form>
+          </div>
+        </div>
+    </div>
+</div>
+
+
+
+  <?php 
+
+        if (isset($_POST['simpan'])) {
+            $id_user = $_POST['id_user'];
+            $kode_barcode = $_POST['kode_barcode'];
+            $nama_barang = $_POST['nama_barang'];
+            $harga_beli = $_POST['harga_beli'];
+            $harga_jual = $_POST['harga_jual'];
+            $profit = $_POST['profit'];
+            $stok = $_POST['stok'];
+            $satuan = $_POST['satuan'];
+            
+
+            if(empty($kode_barcode) || empty($nama_barang) || empty($satuan) || empty($stok) || empty($harga_beli) || empty($harga_jual)){
+              ?>
+             <script type="text/javascript">
+              alert("Anda harus mengisi data dengan lengkap !");
+             </script>
+
+             <?php
+          }else{
+
+            $sql = $koneksi->query("insert into tb_barang (id_user, kode_barcode, nama_barang, harga_beli, harga_jual, profit, stok, satuan) values('$id_user', '$kode_barcode', '$nama_barang', '$harga_beli', '$harga_jual', '$profit', '$stok', '$satuan')");
+                ?> 
+                ?> 
+
+                    <script type="text/javascript">
+                        alert("barang Berhasil Disimpan");
+                        window.location.href="?page=barang";
+                    </script>
+
+                <?php  
+
+          }
+        
+
+        }
+     ?>
